@@ -32,7 +32,7 @@ def on_chat_message(msg):
     # print('Chat Message:', content_type, chat_type, chat_id)
     chat_id = msg['chat']['id']
     text = msg['text']
-    command = text.lower()
+    command = text.lower(0)
     if not chat_id in users:
         reply_markup = InlineKeyboardMarkup(inline_keyboard=[
             [
