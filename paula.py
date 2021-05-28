@@ -32,7 +32,7 @@ def on_chat_message(msg):
     # print('Chat Message:', content_type, chat_type, chat_id)
     chat_id = msg['chat']['id']
     text = msg['text']
-    command = text.lower(0)
+    command = text.lower()
     if not chat_id in users:
         reply_markup = InlineKeyboardMarkup(inline_keyboard=[
             [
@@ -72,7 +72,7 @@ def on_chat_message(msg):
         elif command.startswith('shutdown'):
             if chat_id == admin_id:
                 print('Exit!')
-                os._exit()
+                os._exit(0)
 
 def on_callback_query(msg):
     admin_id = config['telegram']['admin_id']
