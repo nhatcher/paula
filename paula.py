@@ -68,6 +68,10 @@ def on_chat_message(msg):
                 bot.sendDocument(chat_id, f)
         elif command.startswith('lights'):
             toggle()
+        elif command.startswith('shutdown'):
+            if chat_id == admin_id:
+                print('Exit!')
+                exit()
 
 def on_callback_query(msg):
     admin_id = config['telegram']['admin_id']
