@@ -19,7 +19,7 @@ config = toml.load('config.toml')
 
 users = {}
 for user in config['telegram']['users']:
-    user[user['user_id']] = user['name']
+    users[user['user_id']] = user['name']
 
 bot = telepot.Bot(config['telegram']['token'])
 index = 1
@@ -76,6 +76,8 @@ def on_callback_query(msg):
     if from_id == admin_id:
         if query_data.startswith('add_user:'):
             (user_id, user_name) = query_data[9:].split(',')
+            user_id = int(user_id.strip())
+            user_name = user_name.strip()
             users[user_id] = user_name
             bot.answerCallbackQuery(query_id, text='User added')
             bot.sendMessage(user_id, "Welcome! You are now an authorized user!")
