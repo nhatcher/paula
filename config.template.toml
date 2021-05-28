@@ -1,0 +1,14 @@
+[tradfri]
+identity = "<pick a name>"
+ip = "<You find in your Router>"
+shared_key = "<See README>"
+
+[telegram]
+token = "<You get fro  FatherBot>"
+admin_id = <see README>
+users = [
+    {
+        name = "<Name of User>",
+        user_id = <you get from telegram>
+    }
+]
