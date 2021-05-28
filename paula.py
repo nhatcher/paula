@@ -8,7 +8,6 @@ from time import sleep
 import glob
 from PIL import Image
 from tradfri import toggle
-import os
 
 path = './images/'
 fp_in = f"{path}image-*.png"
@@ -24,6 +23,7 @@ for user in config['telegram']['users']:
 
 bot = telepot.Bot(config['telegram']['token'])
 index = 1
+done = False 
 
 def on_chat_message(msg):
     print(f'Got message: {msg}')
@@ -72,7 +72,7 @@ def on_chat_message(msg):
         elif command.startswith('shutdown'):
             if chat_id == admin_id:
                 print('Exit!')
-                os._exit(0)
+                done = True
 
 def on_callback_query(msg):
     admin_id = config['telegram']['admin_id']
@@ -99,7 +99,7 @@ MessageLoop(bot, {
 
 print("Going into a loop")
 
-while True:
+while not done:
     try:
         time.sleep(60)
         print("Take image {}".format(index))
