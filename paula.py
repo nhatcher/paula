@@ -8,6 +8,7 @@ from time import sleep
 import glob
 from PIL import Image
 from tradfri import toggle
+import os
 
 path = './images/'
 fp_in = f"{path}image-*.png"
@@ -71,7 +72,7 @@ def on_chat_message(msg):
         elif command.startswith('shutdown'):
             if chat_id == admin_id:
                 print('Exit!')
-                exit()
+                os._exit()
 
 def on_callback_query(msg):
     admin_id = config['telegram']['admin_id']
