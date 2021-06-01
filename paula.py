@@ -6,24 +6,25 @@ import time
 from picamera import PiCamera
 from time import sleep
 import glob
+import os
 from PIL import Image
 from tradfri import toggle
+from pathlib import Path
+import database as db
+
 
 path = './images/'
 fp_in = f"{path}image-*.png"
 fp_out = 'time.gif'
+exit_file = '.exit'
 
 camera = PiCamera()
 
 config = toml.load('config.toml')
 
-users = {}
-for user in config['telegram']['users']:
-    users[user['user_id']] = user['name']
 
 bot = telepot.Bot(config['telegram']['token'])
 index = 1
-done = False 
 
 def on_chat_message(msg):
     print(f'Got message: {msg}')
@@ -33,7 +34,8 @@ def on_chat_message(msg):
     chat_id = msg['chat']['id']
     text = msg['text']
     command = text.lower()
-    if not chat_id in users:
+    user_name = db.get_user_name(chat_id)
+    if not user_name:
         reply_markup = InlineKeyboardMarkup(inline_keyboard=[
             [
                 InlineKeyboardButton(text="Add user", callback_data=f'add_user: {chat_id}, '),
@@ -42,9 +44,9 @@ def on_chat_message(msg):
         ])
         bot.sendMessage(admin_id, f"New contact {chat_id}: {text}", reply_markup=reply_markup)
     else:
-        bot.sendMessage(chat_id, f"Hello {users[chat_id]}!")
+        bot.sendMessage(chat_id, f"Hello {user_name}!")
         if chat_id != admin_id:
-            bot.sendMessage(admin_id, "Got message from {}: {}".format(users[chat_id], text))
+            bot.sendMessage(admin_id, "Got message from {}: {}".format(user_name, text))
         if command.startswith('say'):
             bot.sendMessage(chat_id, text[4:])
         elif command.startswith("photo"):
@@ -72,7 +74,7 @@ def on_chat_message(msg):
         elif command.startswith('shutdown'):
             if chat_id == admin_id:
                 print('Exit!')
-                done = True
+                Path(exit_file).touch()
 
 def on_callback_query(msg):
     admin_id = config['telegram']['admin_id']
@@ -83,7 +85,7 @@ def on_callback_query(msg):
             (user_id, user_name) = query_data[9:].split(',')
             user_id = int(user_id.strip())
             user_name = user_name.strip()
-            users[user_id] = user_name
+            db.add_user(user_id, user_name, "")
             bot.answerCallbackQuery(query_id, text='User added')
             bot.sendMessage(user_id, "Welcome! You are now an authorized user!")
         elif query_data.startswith('reject'):
@@ -98,8 +100,10 @@ MessageLoop(bot, {
 }).run_as_thread()
 
 print("Going into a loop")
+if os.path.isfile(exit_file):
+    os.remove(exit_file)
 
-while not done:
+while not os.path.isfile(exit_file):
     try:
         time.sleep(60)
         print("Take image {}".format(index))
@@ -108,4 +112,5 @@ while not done:
     except Exception as e:
         print("Exit")
         print(e)
+        db.close()
         exit()

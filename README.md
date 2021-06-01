@@ -1,9 +1,11 @@
-A simple Telegram bot to control your lights and your camera
-============================================================
+PAULA: Personal Assistant Unit Loving Android
+=============================================
 
+Remember this?
+
+https://www.youtube.com/watch?v=onZ4KMM94yI
 
 What if I told you you can use your Raspberry Pi, Python and Telegram to control your Ikea lights?
-
 
 
 What hardware do you need?
