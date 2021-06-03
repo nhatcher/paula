@@ -8,7 +8,7 @@ from time import sleep
 import glob
 import os
 from PIL import Image
-from tradfri import toggle
+from tradfri import toggle, change_bulb
 from pathlib import Path
 import database as db
 
@@ -70,7 +70,38 @@ def on_chat_message(msg):
             with open(fp_out, 'rb') as f:
                 bot.sendDocument(chat_id, f)
         elif command.startswith('lights'):
-            toggle()
+            toggle('living')
+            bot.sendMessage(chat_id, """
+            Deprecated command, please use: 'light room dim color fade' where
+
+            room: bedroom or living
+            dim: 1 to 255
+            color: and hex color (fff for white)
+            fade: time to transition in seconds
+
+            Examples:
+            'light living'  will toggle the state of the bulb in the living room
+            'light bedroom 127' will turn on the light in the bedroom and set it half luminosity
+            'light bedroom 25 fcba03 10' will set the light in the bedroom to a very dim state in an orange color in around 10 seconds
+            """)
+        elif command.startswith('light'):
+            # light room dim color transition
+            args = command.strip().split()
+            n_args = len(args)
+            if n_args == 1:
+                return
+            room = 'bedroom' if args[1].lower().startswith('b') else 'living'
+            if n_args == 2:
+                # toggle the state
+                toggle(room)
+            elif n_args == 3:
+                change_bulb(room, args[2])
+            elif n_args == 4:
+                change_bulb(room, args[2], args[3])
+            elif n_args == 5:
+                change_bulb(room, args[2], args[3], args[5])
+
+                
         elif command.startswith('shutdown'):
             if chat_id == admin_id:
                 print('Exit!')
