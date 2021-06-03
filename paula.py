@@ -72,17 +72,26 @@ def on_chat_message(msg):
         elif command.startswith('lights'):
             toggle('living')
             bot.sendMessage(chat_id, """
-            Deprecated command, please use: 'light room dim color fade' where
+Deprecated command, please use: 
 
-            room: bedroom or living
-            dim: 1 to 255
-            color: and hex color (fff for white)
-            fade: time to transition in seconds
+'light room dim color fade'
 
-            Examples:
-            'light living'  will toggle the state of the bulb in the living room
-            'light bedroom 127' will turn on the light in the bedroom and set it half luminosity
-            'light bedroom 25 fcba03 10' will set the light in the bedroom to a very dim state in an orange color in around 10 seconds
+where
+
+room: bedroom or living
+dim: 1 to 255
+color: and hex color (fff for white)
+fade: time to transition in seconds
+
+Examples:
+
+'light living'
+  will toggle the state of the bulb in the living room
+
+'light bedroom 127'
+   will turn on the light in the bedroom and set it half luminosity
+'light bedroom 25 fcba03 10'
+   will set the light in the bedroom to a very dim state in an orange color in around 10 seconds
             """)
         elif command.startswith('light'):
             # light room dim color transition
