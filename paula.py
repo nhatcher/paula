@@ -108,7 +108,7 @@ Examples:
             elif n_args == 4:
                 change_bulb(room, args[2], args[3])
             elif n_args == 5:
-                change_bulb(room, args[2], args[3], args[5])
+                change_bulb(room, args[2], args[3], args[4])
 
                 
         elif command.startswith('shutdown'):
