@@ -42,7 +42,7 @@ def get_user_name(user_id):
     cursor.execute("SELECT name FROM USERS WHERE id=?", (user_id,))
     results = cursor.fetchall()
     con.close()
-    if len(results) != 1:
+    if len(results) == 0:
         return None
     return results[0][0]
 

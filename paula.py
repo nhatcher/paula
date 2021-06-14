@@ -7,6 +7,8 @@ from picamera import PiCamera
 from time import sleep
 import glob
 import os
+import board
+import adafruit_dht
 from PIL import Image
 from tradfri import toggle, change_bulb
 from pathlib import Path
@@ -17,6 +19,11 @@ path = './images/'
 fp_in = f"{path}image-*.png"
 fp_out = 'time.gif'
 exit_file = '.exit'
+
+dhtDevice = adafruit_dht.DHT11(board.D17)
+
+temperature = 0
+humidity = 0
 
 camera = PiCamera()
 
@@ -35,7 +42,7 @@ def on_chat_message(msg):
     text = msg['text']
     command = text.lower()
     user_name = db.get_user_name(chat_id)
-    if not user_name:
+    if user_name is None:
         reply_markup = InlineKeyboardMarkup(inline_keyboard=[
             [
                 InlineKeyboardButton(text="Add user", callback_data=f'add_user: {chat_id}, '),
@@ -45,6 +52,7 @@ def on_chat_message(msg):
         bot.sendMessage(admin_id, f"New contact {chat_id}: {text}", reply_markup=reply_markup)
     else:
         bot.sendMessage(chat_id, f"Hello {user_name}!")
+        bot.sendMessage(chat_id, "Temperature: {:.1f} C   Humidity: {}% ".format(temperature, humidity))
         if chat_id != admin_id:
             bot.sendMessage(admin_id, "Got message from {}: {}".format(user_name, text))
         if command.startswith('say'):
@@ -148,6 +156,11 @@ while not os.path.isfile(exit_file):
         time.sleep(60)
         print("Take image {}".format(index))
         camera.capture(f"{path}image-{index:03}.png")
+        try:
+            temperature = dhtDevice.temperature
+            humidity = dhtDevice.humidity
+        except RuntimeError as error:
+            print(error.args[0])
         index += 1
     except Exception as e:
         print("Exit")
